@@ -1,0 +1,10 @@
+[package]
+name = "free"
+version = "0.1.0"
+authors = ["j-keck <jhyphenkeck@gmail.com>"]
+#links = "kvm"
+
+[dependencies]
+libc = "0.2"
+structopt = "0.2"
+structopt-derive = "0.2"
