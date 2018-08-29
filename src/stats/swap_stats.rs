@@ -4,12 +4,12 @@ use std::ptr;
 use std::mem;
 
 use ::Result;
-use super::{get_pagesize};
+use super::{get_pagesize, sysctl};
 
 #[derive(Debug)]
 pub struct SwapStats {
-    pub used:  u64,
     pub total: u64,
+    pub used:  u64,
     pub free:  u64,
 }
 
@@ -28,10 +28,10 @@ pub fn get_swap_stats() -> Result<SwapStats> {
         ks
     };
 
+    let total = sysctl("vm.swap_total")?;
 
     let pagesize = get_pagesize();
     let used = (ks[0].used * pagesize) as u64;
-    let total = (ks[0].total * pagesize) as u64;
 
     Ok(SwapStats{ used, total, free: total - used })
 }
