@@ -1,7 +1,4 @@
-#[derive(Debug)]
-pub enum Unit {
-  B, K, Ki, M, Mi, G, Gi, T, Ti, P, Pi, H
-}
+use ::Unit;
 
 #[derive(StructOpt, Debug)]
 pub struct Args {

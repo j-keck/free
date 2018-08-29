@@ -3,6 +3,7 @@ use std::ffi::{CString};
 use std::ptr;
 use std::mem;
 
+use ::Result;
 use super::{get_pagesize};
 
 #[derive(Debug)]
@@ -13,7 +14,7 @@ pub struct SwapStats {
 }
 
 
-pub fn get_swap_stats() -> SwapStats {
+pub fn get_swap_stats() -> Result<SwapStats> {
 
     let ks = unsafe {
         let kd = kvm_open(ptr::null_mut()
@@ -32,7 +33,7 @@ pub fn get_swap_stats() -> SwapStats {
     let used = (ks[0].used * pagesize) as u64;
     let total = (ks[0].total * pagesize) as u64;
 
-    SwapStats{ used, total, free: total - used }
+    Ok(SwapStats{ used, total, free: total - used })
 }
 
 
