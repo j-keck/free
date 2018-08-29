@@ -66,6 +66,10 @@ pub struct Args {
   /// show all stats (-dz)
   #[structopt(short = "a", long = "all")]
   pub all: bool,
+
+  /// print version
+  #[structopt(short = "V", long = "version")]
+  pub print_version: bool,
 }
 
 impl Args {

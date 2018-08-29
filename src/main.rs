@@ -6,6 +6,11 @@ use structopt::StructOpt;
 
 fn main() {
     let args = Args::from_args();
-    let stats = Stats::collect();
-    print_report(&stats.unwrap(), &args);
+
+    if args.print_version {
+      println!("{}: v{}", env!("CARGO_PKG_NAME"), env!("CARGO_PKG_VERSION"));
+    } else {
+      let stats = Stats::collect();
+      print_report(&stats.unwrap(), &args);
+    }
 }
