@@ -16,16 +16,13 @@ pub fn print_report(stats: &Stats, args: &Args) {
     };
   }
 
-
   let fmt3 = |mem: u64, swap: u64, total: u64| {
     let (mem_str, swap_str, total_str) = (fmt(mem, unit), fmt(swap, unit), fmt(total, unit));
     (mem_str, swap_str, total_str)
   };
 
-  let println_stat = |name: &str, total: &str, total_w: usize, used: &str, used_w: usize, free: &str, free_w: usize| {
-      println!("{0:<10}      {1:>2$}      {3:>4$}      {5:>6$}", name, total, total_w, used, used_w, free, free_w);
-  };
 
+  // format the values
   let (mem_total, swap_total, total_total) = fmt3(stats.mem.total, stats.swap.total, stats.total());
   let (mem_used, swap_used, total_used) = fmt3(stats.mem.used(), stats.swap.used, stats.used());
   let (mem_free, swap_free, total_free) = fmt3(stats.mem.available(), stats.swap.free, stats.available());
@@ -34,20 +31,29 @@ pub fn print_report(stats: &Stats, args: &Args) {
     (fmt(arc.total, unit), fmt(arc.used(), unit), fmt(arc.free(), unit))
   ).unwrap_or(("".to_string(), "".to_string(), "".to_string()));
 
+
+  // calculate the width for each column
   let total_w = max_len!("total", mem_total, swap_total, total_total, arc_total);
   let used_w = max_len!("used", mem_used, swap_used, total_used, arc_used);
   let free_w = max_len!("free", mem_free, swap_free, total_free, arc_free);
 
 
-  println_stat("", "total", total_w, "used", used_w, "free", free_w);
-  println_stat("Mem:", &mem_total, total_w, &mem_used, used_w, &mem_free, free_w);
-  println_stat("Swap:", &swap_total, total_w, &swap_used, used_w, &swap_free, free_w);
+  // helper to print the report - uses the width values from above
+  let println_stat = |name: &str, total: &str, used: &str, free: &str| {
+      println!("{0:<10}      {1:>2$}      {3:>4$}      {5:>6$}", name, total, total_w, used, used_w, free, free_w);
+  };
+
+
+  // print the report
+  println_stat("", "total", "used", "free");
+  println_stat("Mem:", &mem_total, &mem_used, &mem_free);
+  println_stat("Swap:", &swap_total, &swap_used, &swap_free);
   if args.total || args.all {
-    println_stat("Total:", &total_total, total_w, &total_used, used_w, &total_free, free_w);
+    println_stat("Total:", &total_total, &total_used, &total_free);
   }
 
   if args.zfs || args.all {
-    println_stat("ARC:", &arc_total, total_w, &arc_used, used_w, &arc_free, free_w);
+    println_stat("ARC:", &arc_total, &arc_used, &arc_free);
   }
 
   if args.detailed || args.all {
