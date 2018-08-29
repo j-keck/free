@@ -2,6 +2,7 @@ use super::*;
 
 #[derive(Debug)]
 pub struct MemStats {
+  pub total: u64,
   pub active: u64,
   pub inactive: u64,
   pub laundry: u64,
@@ -11,10 +12,6 @@ pub struct MemStats {
 }
 
 impl MemStats {
-  pub fn total(&self) -> u64 {
-    self.active + self.inactive + self.laundry +
-    self.wire + self.cache + self.free
-  }
 
   pub fn used(&self) -> u64 {
     self.active + self.wire
@@ -29,6 +26,7 @@ impl MemStats {
 pub fn get_mem_stats() -> Result<MemStats> {
   let pagesize = get_pagesize() as u64;
   Ok(MemStats {
+    total: sysctl::<u64>("vm.stats.vm.v_page_count")? * pagesize,
     active: sysctl::<u64>("vm.stats.vm.v_active_count")? * pagesize,
     inactive: sysctl::<u64>("vm.stats.vm.v_inactive_count")? * pagesize,
     laundry: sysctl::<u64>("vm.stats.vm.v_laundry_count")? * pagesize,

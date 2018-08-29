@@ -37,7 +37,7 @@ impl Stats {
   }
 
   pub fn total(&self) -> u64 {
-    self.mem.total() + self.swap.total
+    self.mem.total + self.swap.total
   }
 
   pub fn used(&self) -> u64 {

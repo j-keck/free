@@ -26,7 +26,7 @@ pub fn print_report(stats: &Stats, args: &Args) {
       println!("{0:<10}      {1:>2$}      {3:>4$}      {5:>6$}", name, total, total_w, used, used_w, free, free_w);
   };
 
-  let (mem_total, swap_total, total_total) = fmt3(stats.mem.total(), stats.swap.total, stats.total());
+  let (mem_total, swap_total, total_total) = fmt3(stats.mem.total, stats.swap.total, stats.total());
   let (mem_used, swap_used, total_used) = fmt3(stats.mem.used(), stats.swap.used, stats.used());
   let (mem_free, swap_free, total_free) = fmt3(stats.mem.available(), stats.swap.free, stats.available());
 
