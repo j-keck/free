@@ -29,11 +29,7 @@ pub fn sysctl<T>(name: &str) -> T {
   unsafe {
     let mut v: T = mem::uninitialized();
     let cname = CString::new(name).unwrap();
-    let res = sysctlbyname(cname.as_ptr()
-                           , mem::transmute(&mut v)
-                           , &mut len
-                           , ptr::null()
-                           , 0);
+    let res = sysctlbyname(cname.as_ptr(), mem::transmute(&mut v), &mut len, ptr::null(), 0);
     assert!(res == 0, format!("sysctlbyname for {} failed", name));
     v
   }

@@ -65,6 +65,10 @@ pub struct Args {
   /// show detailed memory stats
   #[structopt(short = "d", long = "detail")]
   pub detailed: bool,
+
+  /// show all stats (-dz)
+  #[structopt(short = "a", long = "all")]
+  pub all: bool,
 }
 
 impl Args {

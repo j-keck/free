@@ -35,7 +35,7 @@ fn main() {
     }
 
 
-    if args.zfs {
+    if args.zfs || args.all {
         println!("\nArc: {} Total, {} MFU, {} MRU, {} Anon, {} Header, {} Other",
                  fmt(zfs_arc_stats.total, unit), fmt(zfs_arc_stats.mfu, unit),
                  fmt(zfs_arc_stats.mru, unit), fmt(zfs_arc_stats.anon, unit),
@@ -43,7 +43,7 @@ fn main() {
                  fmt(zfs_arc_stats.other, unit));
     }
 
-    if args.detailed {
+    if args.detailed || args.all{
         println!("Mem: {} Active, {} Inact, {} Laundry, {} Wired, {} Cache, {} Free",
                  fmt(mem_stats.active, unit), fmt(mem_stats.inactive, unit),
                  fmt(mem_stats.laundry, unit), fmt(mem_stats.wire, unit),
