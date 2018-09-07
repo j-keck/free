@@ -26,12 +26,12 @@ impl MemStats {
 pub fn get_mem_stats() -> Result<MemStats> {
   let pagesize = get_pagesize() as u64;
   Ok(MemStats {
-    total: sysctl::<u64>("vm.stats.vm.v_page_count")? * pagesize,
-    active: sysctl::<u64>("vm.stats.vm.v_active_count")? * pagesize,
-    inactive: sysctl::<u64>("vm.stats.vm.v_inactive_count")? * pagesize,
-    laundry: sysctl::<u64>("vm.stats.vm.v_laundry_count")? * pagesize,
-    wire: sysctl::<u64>("vm.stats.vm.v_wire_count")? * pagesize,
+    total: sysctl("vm.stats.vm.v_page_count")? * pagesize,
+    active: sysctl("vm.stats.vm.v_active_count")? * pagesize,
+    inactive: sysctl("vm.stats.vm.v_inactive_count")? * pagesize,
+    laundry: sysctl("vm.stats.vm.v_laundry_count")? * pagesize,
+    wire: sysctl("vm.stats.vm.v_wire_count")? * pagesize,
     cache: sysctl("vfs.bufspace")?,
-    free: sysctl::<u64>("vm.stats.vm.v_free_count")? * pagesize,
+    free: sysctl("vm.stats.vm.v_free_count")? * pagesize,
   })
 }

@@ -52,13 +52,13 @@ impl Stats {
 
 
 pub fn get_pagesize() -> u32 {
-  sysctl("hw.pagesize").expect("sysctl 'hw.pagesize' not found!")
+  sysctl("hw.pagesize").expect("sysctl 'hw.pagesize' not found!") as u32
 }
 
-pub fn sysctl<T>(name: &str) -> Result<T> {
-  let mut len: size_t = mem::size_of::<T>();
+pub fn sysctl(name: &str) -> Result<u64> {
+  let mut len: size_t = mem::size_of::<u64>();
   unsafe {
-    let mut v: T = mem::uninitialized();
+    let mut v: u64 = mem::uninitialized();
     let cname = CString::new(name).unwrap();
     if sysctlbyname(cname.as_ptr(), mem::transmute(&mut v), &mut len, ptr::null(), 0) == 0 {
       Ok(v)
