@@ -1,61 +1,96 @@
-pipeline {
-  agent any
-  stages {
-    stage('prepare') {
-      parallel {
-        stage('create manpage') {
-          agent {
-            node {
-              label 'nix'
+//import org.jenkinsci.plugins.pipeline.modeldefinition.Utils
+
+node("nix") {
+    checkout scm
+    stage("prepare"){
+        parallel(
+            "create manpage": {
+                sh "nix-build -A manpage"
+                stash name: "free.1", includes: "result/free.1"
+            },
+            "create manifest": {
+                sh "nix-build -A manifest"
+                stash name: "manifest", includes: "result/manifest"
             }
-
-          }
-          steps {
-            sh 'env'
-            sh 'nix-build -A manpage'
-            stash name: 'free.1', includes: 'result/free.1'
-          }
-        }
-        stage('create manifest') {
-          agent {
-            node {
-              label 'nix'
-            }
-
-          }
-          steps {
-            sh 'nix-build -A manifest'
-            stash name: 'manifest', includes: 'result/manifest'
-          }
-        }
-      }
+        )
     }
-    stage('build / test release') {
-      agent {
-        node {
-          label 'freebsd'
-        }
+}
 
-      }
-      steps {
-        sh 'cargo test --release'
-        unstash 'free.1'
-        unstash 'manifest'
+node("freebsd") {
 
-        sh '''
-          mkdir -p usr/local/bin
-          cp -v target/release/free usr/local/bin
+    checkout scm
+    //
+    // FIXME: Scripts not permitted to use method hudson.plugins.git.GitSCM getBranches
+    //
+    // `checkout scm` don't pulls tags, so i need this
+    // checkout([
+    //     $class: 'GitSCM',
+    //     branches: scm.branches,
+    //     doGenerateSubmoduleConfigurations: scm.doGenerateSubmoduleConfigurations,
+    //     extensions: scm.extensions + [[$class: 'CloneOption', noTags: false, reference: '', shallow: true]],
+    //     submoduleCfg: [],
+    //     userRemoteConfigs: scm.userRemoteConfigs
+    // ])
 
-          mkdir -p usr/local/man/man1
-          cp -v result/free.1 usr/local/man/man1
 
+    stage("setup env") {
+        env.FREE_VERSION_CARGO = {
+            def txt = readFile("Cargo.toml")
+            def group = (txt =~ /version\s*=\s*"([\d\.]+)"/)
+            group[0][1]
+        }()
 
-          pkg create -v -r . -M result/manifest
-          ls -ltr
-        '''
+        env.FREE_VERSION_GIT = sh(returnStdout: true, script: "git describe --always --tags")
+        env.FREE_PACKAGE = "free-${env.FREE_VERSION_CARGO}.txz"
 
-        archiveArtifacts artifacts: 'free*txz'
-      }
+        // log the actual environemnt
+        sh 'env|sort'
     }
-  }
+
+    stage("test (release)") {
+        sh "cargo test --release"
+    }
+
+    stage("package"){
+        echo "executable"
+        sh "cargo build --release"
+        sh "mkdir -p usr/local/bin"
+        sh "cp -v target/release/free usr/local/bin"
+
+        echo "manpage"
+        unstash name: 'free.1'
+        sh "mkdir -p usr/local/man/man1"
+        sh "cp -v result/free.1 usr/local/man/man1"
+
+        echo "create package"
+        unstash name: "manifest"
+        sh "pkg create -v -r . -M result/manifest"
+
+        echo "archive artifacts"
+        archiveArtifacts artifacts: "free*txz"
+    }
+
+
+    stage("dogfooding") {
+        if(env.NODE_NAME == "wurzel") {
+            sh "sudo pkg install -f -y ${env.FREE_PACKAGE}"
+            sh "free -V"
+            sh "free -ha"
+        } else {
+            echo "skipped - run's only on 'wurzel"
+            //
+            // FIXME: doesn't work with scripts!!
+            // Utils.markStageSkippedForConditional("doogfooding")
+        }
+    }
+
+
+    stage("publish"){
+        if(env.FREE_VERSION_CARGO == env.FREE_VERSION_GIT) {
+            // FIXME: publish to github
+            //   - how to fetch git tags!?!?
+        } else {
+            currentBuild.description = "skip publish - no release build"
+        }
+    }
 }
