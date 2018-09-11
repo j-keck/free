@@ -23,7 +23,7 @@ impl ZfsArcStats {
 
 pub fn get_zfs_arc_stats() -> Result<ZfsArcStats> {
   Ok(ZfsArcStats {
-    total: sysctl("kstat.zfs.misc.arcstats.size")?,
+    total: sysctl("vfs.zfs.arc_max")?,
     mfu: sysctl("vfs.zfs.mfu_size")?,
     mru: sysctl("vfs.zfs.mru_size")?,
     anon: sysctl("vfs.zfs.anon_size")?,
