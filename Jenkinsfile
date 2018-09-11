@@ -1,4 +1,4 @@
-//import org.jenkinsci.plugins.pipeline.modeldefinition.Utils
+import org.jenkinsci.plugins.pipeline.modeldefinition.Utils
 
 node("nix") {
     checkout scm
@@ -83,9 +83,7 @@ node("freebsd") {
             sh "free -ha"
         } else {
             echo "skipped - run's only on 'wurzel"
-            //
-            // FIXME: doesn't work with scripts!!
-            // Utils.markStageSkippedForConditional("doogfooding")
+            Utils.markStageSkippedForConditional(STAGE_NAME)
         }
     }
 
@@ -95,7 +93,7 @@ node("freebsd") {
             // FIXME: publish to github
             //   - how to fetch git tags!?!?
         } else {
-            currentBuild.description = "skip publish - no release build"
+            Utils.markStageSkippedForConditional(STAGE_NAME)
         }
     }
 }
