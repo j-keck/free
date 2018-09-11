@@ -17,11 +17,13 @@ pub struct SwapStats {
 pub fn get_swap_stats() -> Result<SwapStats> {
 
     let ks = unsafe {
+        let cstr_dev_null = CString::new("/dev/null").unwrap();
+        let cstr_kvm_open = CString::new("kvm_open").unwrap();
         let kd = kvm_open(ptr::null_mut()
-                          , CString::new("/dev/null").unwrap().as_ptr()
-                          , CString::new("/dev/null").unwrap().as_ptr()
+                          , cstr_dev_null.as_ptr()
+                          , cstr_dev_null.as_ptr()
                           , O_RDONLY
-                          , CString::new("kvm_open").unwrap().as_ptr());
+                          , cstr_kvm_open.as_ptr());
         let mut ks: [kvm_swap; 1] = mem::uninitialized();
         kvm_getswapinfo(kd, ks.as_mut_ptr() as *mut c_void, 1, 0);
         kvm_close(kd);
@@ -31,7 +33,7 @@ pub fn get_swap_stats() -> Result<SwapStats> {
     let total = sysctl("vm.swap_total")?;
 
     let pagesize = get_pagesize();
-    let used = (ks[0].used * pagesize) as u64;
+    let used = u64::from(ks[0].used * pagesize);
 
     Ok(SwapStats{ used, total, free: total - used })
 }

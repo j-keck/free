@@ -1,4 +1,4 @@
-use libc::{sysctlbyname, size_t};
+use libc::{sysctlbyname, size_t, c_void};
 use std::mem;
 use std::ptr;
 use std::ffi::{CString};
@@ -60,7 +60,7 @@ pub fn sysctl(name: &str) -> Result<u64> {
   unsafe {
     let mut v: u64 = mem::uninitialized();
     let cname = CString::new(name).unwrap();
-    if sysctlbyname(cname.as_ptr(), mem::transmute(&mut v), &mut len, ptr::null(), 0) == 0 {
+    if sysctlbyname(cname.as_ptr(), &mut v as *mut u64 as *mut c_void, &mut len, ptr::null(), 0) == 0 {
       Ok(v)
     } else {
       Err(error!("sysctlbyname for {} failed", name))

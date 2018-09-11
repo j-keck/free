@@ -24,7 +24,7 @@ impl MemStats {
 
 
 pub fn get_mem_stats() -> Result<MemStats> {
-  let pagesize = get_pagesize() as u64;
+  let pagesize = u64::from(get_pagesize());
   Ok(MemStats {
     total: sysctl("vm.stats.vm.v_page_count")? * pagesize,
     active: sysctl("vm.stats.vm.v_active_count")? * pagesize,

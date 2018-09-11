@@ -48,12 +48,17 @@ node("freebsd") {
     }
 
     stage("test (release)") {
-        sh "cargo test --release"
+        cargo "test --release"
     }
+
+    stage("clippy") {
+        cargo "+nightly clippy"
+    }
+
 
     stage("package"){
         echo "executable"
-        sh "cargo build --release"
+        cargo "build --release"
         sh "mkdir -p usr/local/bin"
         sh "cp -v target/release/free usr/local/bin"
 
@@ -92,5 +97,13 @@ node("freebsd") {
         } else {
             currentBuild.description = "skip publish - no release build"
         }
+    }
+}
+
+
+def cargo(String args) {
+    withEnv(["PATH=$HOME/.cargo/bin:$PATH"]) {
+        sh "rustc --version"
+        sh "cargo ${args}"
     }
 }

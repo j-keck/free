@@ -58,13 +58,13 @@ pub fn print_report(stats: &Stats, args: &Args) {
 
   if args.detailed || args.all {
     println!();
-    stats.zfs_arc.as_ref().map(|arc| {
+    if let Some(arc) = stats.zfs_arc.as_ref() {
         println!("ARC: {} Total, {} MFU, {} MRU, {} Anon, {} Header, {} Other",
                  fmt(arc.total, unit), fmt(arc.mfu, unit),
                  fmt(arc.mru, unit), fmt(arc.anon, unit),
                  fmt(arc.hdr + arc.l2_hdr, unit),
                  fmt(arc.other, unit));
-    });
+    };
     println!("Mem: {} Active, {} Inact, {} Laundry, {} Wired, {} Cache, {} Free",
              fmt(stats.mem.active, unit), fmt(stats.mem.inactive, unit),
              fmt(stats.mem.laundry, unit), fmt(stats.mem.wire, unit),
