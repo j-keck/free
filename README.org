@@ -3,3 +3,72 @@
 *free* -- Display amount of free and used memory on a FreeBSD system.
 
 It's a clone from the *procps-ng free* command under Linux.
+
+
+* Background
+
+I switch between Linux and FreeBSD hosts, and *free* was always a utility i was missing under FreeBSD - so i build it.
+
+
+* Usage
+
+** Show the memory statistics in mebibytes including totals.
+
+#+BEGIN_EXAMPLE
+$ free -mt
+                total      used      free
+Mem:             7757      4681      1964
+Swap:            2048       126      1921
+Total:           9805      4808      3886
+#+END_EXAMPLE
+
+
+**  Show the memory statistics in human readable form, including memory details.
+#+BEGIN_EXAMPLE
+$ free -ah
+                total         used        free
+Mem:            7.6Gi        4.5Gi       2.0Gi
+Swap:           2.0Gi      126.5Mi       1.9Gi
+Total:          9.6Gi        4.6Gi       3.8Gi
+ARC:            2.0Gi        1.9Gi      47.1Mi
+ARC: 2.0Gi Total, 303.4Mi MFU, 1.2Gi MRU, 11.5Mi Anon, 65.1Mi Header, 471.6Mi Other
+Mem: 1.2Gi Active, 774.8Mi Inact, 1.1Gi Laundry, 3.3Gi Wired, 0.0B Cache, 1.2Gi Free
+#+END_EXAMPLE
+
+
+/see [[MANUAL.org]] for the supported flags/
+
+* Installation
+
+** Prebuild
+
+You can download the latest package from: [[https://github.com/j-keck/free/releases/latest]].
+
+I build the package on =FreeBSD 11.2-RELEASE-p2 amd64=.
+
+/If you need the binary for any other architecture / version, feel free to ping me or open an issue/
+
+
+** From source
+
+*** Build the binary
+
+  * clone the repository
+
+     ~git clone github.com/j-keck/free && cd free~
+
+  * build
+
+     ~cargo build --release~
+
+  * copy the binary to your ~/bin folder
+
+    ~cp target/release/free ~/bin~
+
+*** Build the manpage
+
+I use =pandoc= to create the man-page from [[MANUAL.org]].
+
+  * create the manpage
+
+    ~pandoc -s -o /usr/local/man/man1/free.1 MANUAL.org~
