@@ -1,1 +1,5 @@
-* `free` for FreeBSD
+* free
+
+*free* -- Display amount of free and used memory on a FreeBSD system.
+
+It's a clone from the *procps-ng free* command under Linux.

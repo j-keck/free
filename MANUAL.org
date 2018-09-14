@@ -5,18 +5,18 @@
 
 * NAME
 
- **free** -- Display amount of free and used memory in the system
+ *free* -- Display amount of free and used memory in the system
 
 
 * SYNOPSIS
 
- **free** [options]
+ *free* [options]
 
 
 * DESCRIPTION
 
-  **free** is a clone from the **procps-ng free** command.
-  To collect the memory statistics, **free** uses **sysctlbyname** and **libkvm**.
+  *free* is a clone from the *procps-ng free* command.
+  To collect the memory statistics, *free* uses *sysctlbyname* and *libkvm*.
   It also includes ZFS ARC memory statistics.
 
 
